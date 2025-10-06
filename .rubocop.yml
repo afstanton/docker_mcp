@@ -6,6 +6,9 @@ AllCops:
   TargetRubyVersion: 3.2
   NewCops: enable
 
+Lint/UnusedMethodArgument:
+  Enabled: false
+
 Metrics/MethodLength:
   Enabled: false
 

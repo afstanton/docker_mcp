@@ -4,10 +4,20 @@ module DockerMCP
   class ListContainers < MCP::Tool
     description 'List Docker containers'
 
-    def self.call(*)
+    input_schema(
+      properties: {
+        all: {
+          type: 'boolean',
+          description: 'Show all containers (default shows all containers including stopped ones)'
+        }
+      },
+      required: []
+    )
+
+    def self.call(server_context:, all: true)
       MCP::Tool::Response.new([{
                                 type: 'text',
-                                text: Docker::Container.all(all: true).map(&:info).to_s
+                                text: Docker::Container.all(all: all).map(&:info).to_s
                               }])
     end
   end
