@@ -5,6 +5,10 @@ module DockerMCP
     description 'List Docker networks'
 
     def self.call(*)
+      MCP::Tool::Response.new([{
+                                type: 'text',
+                                text: Docker::Network.all.map(&:info).to_s
+                              }])
     end
   end
 end

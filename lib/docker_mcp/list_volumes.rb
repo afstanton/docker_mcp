@@ -5,6 +5,10 @@ module DockerMCP
     description 'List Docker volumes'
 
     def self.call(*)
+      MCP::Tool::Response.new([{
+                                type: 'text',
+                                text: Docker::Volume.all.map(&:info).to_s
+                              }])
     end
   end
 end
