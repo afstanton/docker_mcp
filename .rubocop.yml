@@ -7,7 +7,7 @@ AllCops:
   NewCops: enable
 
 Lint/UnusedMethodArgument:
-  Enabled: false
+  AllowUnusedKeywordArguments: true
 
 Metrics/MethodLength:
   Enabled: false
