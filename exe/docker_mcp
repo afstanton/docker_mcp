@@ -1,7 +1,7 @@
 require 'docker_mcp'
 
 # Set up the server
-server = DockerMcp::Server.new.server
+server = DockerMCP::Server.new.server
 
 # Create and start the transport
 transport = MCP::Server::Transports::StdioTransport.new(server)

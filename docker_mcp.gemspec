@@ -4,7 +4,7 @@ require_relative 'lib/docker_mcp/version'
 
 Gem::Specification.new do |spec|
   spec.name = 'docker_mcp'
-  spec.version = DockerMcp::VERSION
+  spec.version = DockerMCP::VERSION
   spec.authors = ['Aaron F Stanton']
   spec.email = ['afstanton@gmail.com']
 

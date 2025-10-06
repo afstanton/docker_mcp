@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module DockerMcp
+module DockerMCP
   class ListImages < MCP::Tool
     description 'List Docker images'
 
