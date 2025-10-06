@@ -4,7 +4,6 @@ module DockerMCP
   class RemoveNetwork < MCP::Tool
     description 'Remove a Docker network'
 
-    def self.call(*)
-    end
+    def self.call(*); end
   end
 end

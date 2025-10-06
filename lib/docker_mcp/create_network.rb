@@ -4,7 +4,6 @@ module DockerMCP
   class CreateNetwork < MCP::Tool
     description 'Create a Docker network'
 
-    def self.call(*)
-    end
+    def self.call(*); end
   end
 end

@@ -4,7 +4,6 @@ module DockerMCP
   class PullImage < MCP::Tool
     description 'Pull a Docker image'
 
-    def self.call(*)
-    end
+    def self.call(*); end
   end
 end

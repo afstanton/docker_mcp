@@ -4,7 +4,6 @@ module DockerMCP
   class BuildImage < MCP::Tool
     description 'Build a Docker image'
 
-    def self.call(*)
-    end
+    def self.call(*); end
   end
 end

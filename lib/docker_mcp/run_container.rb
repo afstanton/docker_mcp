@@ -4,7 +4,6 @@ module DockerMCP
   class RunContainer < MCP::Tool
     description 'Run a Docker container'
 
-    def self.call(*)
-    end
+    def self.call(*); end
   end
 end
