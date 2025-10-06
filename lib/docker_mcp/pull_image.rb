@@ -19,19 +19,27 @@ module DockerMCP
     )
 
     def self.call(from_image:, server_context:, tag: nil)
-      params = { 'fromImage' => from_image }
-      params['tag'] = tag if tag
+      # If tag is provided separately, append it to from_image
+      # If from_image already has a tag (contains :), use as-is
+      # Otherwise default to :latest
+      image_with_tag = if tag
+                         "#{from_image}:#{tag}"
+                       elsif from_image.include?(':')
+                         from_image
+                       else
+                         "#{from_image}:latest"
+                       end
 
-      image = Docker::Image.create(params)
+      image = Docker::Image.create('fromImage' => image_with_tag)
 
       MCP::Tool::Response.new([{
                                 type: 'text',
-                                text: "Image #{from_image}#{":#{tag}" if tag} pulled successfully. ID: #{image.id}"
+                                text: "Image #{image_with_tag} pulled successfully. ID: #{image.id}"
                               }])
     rescue Docker::Error::NotFoundError
       MCP::Tool::Response.new([{
                                 type: 'text',
-                                text: "Image #{from_image}#{":#{tag}" if tag} not found"
+                                text: "Image #{image_with_tag} not found"
                               }])
     rescue StandardError => e
       MCP::Tool::Response.new([{
