@@ -7,7 +7,7 @@ module DockerMCP
     def self.call(*)
       MCP::Tool::Response.new([{
                                 type: 'text',
-                                text: Docker::Container.all.map(&:info).to_s
+                                text: Docker::Container.all(all: true).map(&:info).to_s
                               }])
     end
   end
