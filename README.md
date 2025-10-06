@@ -18,7 +18,38 @@ gem install docker_mcp
 
 ## Usage
 
-TODO: Write usage instructions here
+## 🔨 Tools
+
+### Containers
+
+- `list_containers`
+- `create_container`
+- `run_container`
+- `recreate_container`
+- `start_container`
+- `fetch_container_logs`
+- `stop_container`
+- `remove_container`
+
+### Images
+
+- `list_images`
+- `pull_image`
+- `push_image`
+- `build_image`
+- `remove_image`
+
+### Networks
+
+- `list_networks`
+- `create_network`
+- `remove_network`
+
+### Volumes
+
+- `list_volumes`
+- `create_volume`
+- `remove_volume`
 
 ## Development
 
