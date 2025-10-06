@@ -18,6 +18,19 @@ gem install docker_mcp
 
 ## Usage
 
+Add this to your MCP configs after installing the gem:
+
+```
+    "docker_mcp": {
+      "command": "bash",
+      "args": [
+        "-l",
+        "-c",
+        "docker_mcp"
+      ]
+    }
+```
+
 ## 🔨 Tools
 
 ### Containers
