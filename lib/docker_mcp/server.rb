@@ -7,7 +7,27 @@ module DockerMCP
     def initialize
       @server = MCP::Server.new(
         name: 'docker_mcp',
-        tools: [ListImages]
+        tools: [
+          BuildImage,
+          CreateContainer,
+          CreateNetwork,
+          CreateVolume,
+          FetchContainerLogs,
+          ListContainers,
+          ListImages,
+          ListNetworks,
+          ListVolumes,
+          PullImage,
+          PushImage,
+          RecreateContainer,
+          RemoveContainer,
+          RemoveImage,
+          RemoveNetwork,
+          RemoveVolume,
+          RunContainer,
+          StartContainer,
+          StopContainer
+        ]
       )
     end
   end
