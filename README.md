@@ -36,6 +36,7 @@ gem install docker_mcp
 - `list_images`
 - `pull_image`
 - `push_image`
+- `tag_image`
 - `build_image`
 - `remove_image`
 

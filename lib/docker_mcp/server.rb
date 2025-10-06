@@ -26,7 +26,8 @@ module DockerMCP
           RemoveVolume,
           RunContainer,
           StartContainer,
-          StopContainer
+          StopContainer,
+          TagImage
         ]
       )
     end
