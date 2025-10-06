@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module DockerMcp
-  class ListImages
+  class ListImages < MCP::Tool
     description 'List Docker images'
 
     def self.call(*)
