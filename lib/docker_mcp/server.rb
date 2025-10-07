@@ -9,6 +9,7 @@ module DockerMCP
         name: 'docker_mcp',
         tools: [
           BuildImage,
+          CopyToContainer,
           CreateContainer,
           CreateNetwork,
           CreateVolume,
