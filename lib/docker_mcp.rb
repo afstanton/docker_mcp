@@ -3,6 +3,7 @@
 require 'docker'
 require 'json'
 require 'mcp'
+require 'shellwords'
 require 'zeitwerk'
 
 loader = Zeitwerk::Loader.for_gem(warn_on_extra_files: false)

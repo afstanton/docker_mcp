@@ -12,6 +12,7 @@ module DockerMCP
           CreateContainer,
           CreateNetwork,
           CreateVolume,
+          ExecContainer,
           FetchContainerLogs,
           ListContainers,
           ListImages,
