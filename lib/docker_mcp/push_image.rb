@@ -83,11 +83,10 @@ module DockerMCP
       options[:tag] = tag if tag
       options[:repo_tag] = repo_tag if repo_tag
 
-      # Get credentials
-      creds = Docker.creds
-
+      # After Docker.authenticate! is called, the credentials are stored globally
+      # and will be used automatically by push. We don't need to pass creds explicitly.
       # Push and capture the response
-      image.push(creds, options) do |chunk|
+      image.push(nil, options) do |chunk|
         # The push method yields JSON chunks with status info
         # We can parse these to detect errors
         if chunk
