@@ -45,8 +45,15 @@ module DockerMCP
       options[:tag] = tag if tag
       options[:repo_tag] = repo_tag if repo_tag
 
+      # The push method requires credentials to be set if authentication is needed.
+      # Docker stores credentials from `docker login` in a config file, but the
+      # docker-api gem doesn't automatically read them. We need to pass credentials
+      # explicitly. For now, try to push and let Docker handle authentication via
+      # its credential helpers.
+      creds = Docker.creds
+
       # Push and capture the response
-      image.push(nil, options) do |chunk|
+      image.push(creds, options) do |chunk|
         # The push method yields JSON chunks with status info
         # We can parse these to detect errors
         if chunk
