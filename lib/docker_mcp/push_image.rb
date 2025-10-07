@@ -23,7 +23,8 @@ module DockerMCP
     )
 
     def self.call(name:, server_context:, tag: nil, repo_tag: nil)
-      image = Docker::Image.get(name)
+      # Construct the full image identifier to look up
+      image_identifier = tag ? "#{name}:#{tag}" : name
 
       # Validate that the image name includes a registry/username
       # Images without a registry prefix will fail to push to Docker Hub
@@ -36,6 +37,9 @@ module DockerMCP
                                          text: error_msg
                                        }])
       end
+
+      # Get the image after validation
+      image = Docker::Image.get(image_identifier)
 
       options = {}
       options[:tag] = tag if tag
