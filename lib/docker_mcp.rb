@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'docker'
+require 'json'
 require 'mcp'
 require 'zeitwerk'
 

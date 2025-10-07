@@ -41,15 +41,31 @@ module DockerMCP
       # Get the image after validation
       image = Docker::Image.get(image_identifier)
 
+      # Read Docker credentials and authenticate
+      # The docker-api gem requires explicit authentication via Docker.authenticate!
+      # Try to read credentials from Docker's config file
+      begin
+        config_path = File.expand_path('~/.docker/config.json')
+        if File.exist?(config_path)
+          config = JSON.parse(File.read(config_path))
+          # Docker uses credential helpers, so we may not have direct credentials
+          # Try to authenticate with whatever we can find
+          if config['auths'] && config['auths']['https://index.docker.io/v1/']
+            auth_data = config['auths']['https://index.docker.io/v1/']
+            # If there's an auth token, try to use it
+            Docker.authenticate!('serveraddress' => 'https://index.docker.io/v1/') if auth_data
+          end
+        end
+      rescue StandardError
+        # If authentication setup fails, continue anyway - Docker.creds might still work
+        # We'll catch the real error during push
+      end
+
       options = {}
       options[:tag] = tag if tag
       options[:repo_tag] = repo_tag if repo_tag
 
-      # The push method requires credentials to be set if authentication is needed.
-      # Docker stores credentials from `docker login` in a config file, but the
-      # docker-api gem doesn't automatically read them. We need to pass credentials
-      # explicitly. For now, try to push and let Docker handle authentication via
-      # its credential helpers.
+      # Get credentials
       creds = Docker.creds
 
       # Push and capture the response
