@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'json'
+
 module DockerMCP
   class PushImage < MCP::Tool
     description 'Push a Docker image'
@@ -43,21 +45,37 @@ module DockerMCP
 
       # Read Docker credentials and authenticate
       # The docker-api gem requires explicit authentication via Docker.authenticate!
-      # Try to read credentials from Docker's config file
+      # Docker uses credential helpers to store credentials securely
       begin
         config_path = File.expand_path('~/.docker/config.json')
         if File.exist?(config_path)
           config = JSON.parse(File.read(config_path))
-          # Docker uses credential helpers, so we may not have direct credentials
-          # Try to authenticate with whatever we can find
-          if config['auths'] && config['auths']['https://index.docker.io/v1/']
+
+          # Check if a credential helper is configured
+          if config['credsStore']
+            helper_name = "docker-credential-#{config['credsStore']}"
+
+            # Call the credential helper to get credentials for Docker Hub
+            server_url = 'https://index.docker.io/v1/'
+            creds_json = `echo "#{server_url}" | #{helper_name} get 2>/dev/null`
+
+            if $CHILD_STATUS.success? && !creds_json.empty?
+              creds_data = JSON.parse(creds_json)
+              # Authenticate with Docker using the retrieved credentials
+              Docker.authenticate!(
+                'username' => creds_data['Username'],
+                'password' => creds_data['Secret'],
+                'serveraddress' => server_url
+              )
+            end
+          elsif config['auths'] && config['auths']['https://index.docker.io/v1/']
+            # Fallback: try direct auth from config if no credential helper
             auth_data = config['auths']['https://index.docker.io/v1/']
-            # If there's an auth token, try to use it
             Docker.authenticate!('serveraddress' => 'https://index.docker.io/v1/') if auth_data
           end
         end
-      rescue StandardError
-        # If authentication setup fails, continue anyway - Docker.creds might still work
+      rescue StandardError => _e
+        # If authentication setup fails, continue anyway
         # We'll catch the real error during push
       end
 
