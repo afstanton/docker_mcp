@@ -1,4 +1,0 @@
-Hello from the host system!
-This is a test file created to demonstrate copying to a Docker container.
-Current timestamp: October 7, 2025
-Container ID: 6e72c278e24ef9bc3fe1c9dff044911d3777af4d1c19ba77d7c1890323b43335
