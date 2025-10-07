@@ -62,9 +62,10 @@ module DockerMCP
             if $CHILD_STATUS.success? && !creds_json.empty?
               creds_data = JSON.parse(creds_json)
               # Authenticate with Docker using the retrieved credentials
+              # Docker API v2 uses 'identifier' and 'secret'
               Docker.authenticate!(
-                'username' => creds_data['Username'],
-                'password' => creds_data['Secret'],
+                'identifier' => creds_data['Username'],
+                'secret' => creds_data['Secret'],
                 'serveraddress' => server_url
               )
             end
