@@ -23,6 +23,3 @@ Metrics/MethodLength:
 
 Metrics/ParameterLists:
   Enabled: false
-
-Style/Documentation:
-  Enabled: false
