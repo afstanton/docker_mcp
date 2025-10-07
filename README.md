@@ -38,9 +38,11 @@ Add this to your MCP configs after installing the gem:
 - `run_container`
 - `recreate_container`
 - `start_container`
-- `fetch_container_logs`
 - `stop_container`
 - `remove_container`
+- `exec_container`
+- `fetch_container_logs`
+- `copy_to_container`
 
 ### Images
 
