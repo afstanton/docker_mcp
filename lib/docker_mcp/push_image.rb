@@ -25,12 +25,35 @@ module DockerMCP
     def self.call(name:, server_context:, tag: nil, repo_tag: nil)
       image = Docker::Image.get(name)
 
+      # Validate that the image name includes a registry/username
+      # Images without a registry prefix will fail to push to Docker Hub
+      unless name.include?('/') || repo_tag&.include?('/')
+        error_msg = 'Error: Image name must include registry/username ' \
+                    "(e.g., 'username/#{name}'). Local images cannot be " \
+                    'pushed without a registry prefix.'
+        return MCP::Tool::Response.new([{
+                                         type: 'text',
+                                         text: error_msg
+                                       }])
+      end
+
       options = {}
       options[:tag] = tag if tag
       options[:repo_tag] = repo_tag if repo_tag
 
-      # Push returns the image with updated info
-      image.push(nil, options)
+      # Push and capture the response
+      image.push(nil, options) do |chunk|
+        # The push method yields JSON chunks with status info
+        # We can parse these to detect errors
+        if chunk
+          parsed = begin
+            JSON.parse(chunk)
+          rescue StandardError
+            nil
+          end
+          raise Docker::Error::DockerError, parsed['error'] if parsed && parsed['error']
+        end
+      end
 
       push_target = repo_tag || (tag ? "#{name}:#{tag}" : name)
 
