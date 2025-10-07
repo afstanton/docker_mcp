@@ -19,10 +19,16 @@ module DockerMCP
     )
 
     def self.call(dockerfile:, server_context:, tag: nil)
-      options = {}
-      options['t'] = tag if tag
+      # Build the image
+      image = Docker::Image.build(dockerfile)
 
-      image = Docker::Image.build(dockerfile, options)
+      # If a tag was specified, tag the image
+      if tag
+        # Split tag into repo and tag parts
+        repo, image_tag = tag.split(':', 2)
+        image_tag ||= 'latest'
+        image.tag('repo' => repo, 'tag' => image_tag, 'force' => true)
+      end
 
       response_text = "Image built successfully. ID: #{image.id}"
       response_text += ", Tag: #{tag}" if tag
