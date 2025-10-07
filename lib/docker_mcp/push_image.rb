@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'json'
+require 'open3'
 
 module DockerMCP
   class PushImage < MCP::Tool
@@ -25,7 +26,7 @@ module DockerMCP
     )
 
     def self.call(name:, server_context:, tag: nil, repo_tag: nil)
-      # Construct the full image identifier to look up
+      # Construct the full image identifier
       image_identifier = tag ? "#{name}:#{tag}" : name
 
       # Validate that the image name includes a registry/username
@@ -40,82 +41,36 @@ module DockerMCP
                                        }])
       end
 
-      # Get the image after validation
-      image = Docker::Image.get(image_identifier)
-
-      # Read Docker credentials and authenticate
-      # The docker-api gem requires explicit authentication via Docker.authenticate!
-      # Docker uses credential helpers to store credentials securely
+      # Verify the image exists
       begin
-        config_path = File.expand_path('~/.docker/config.json')
-        if File.exist?(config_path)
-          config = JSON.parse(File.read(config_path))
-
-          # Check if a credential helper is configured
-          if config['credsStore']
-            helper_name = "docker-credential-#{config['credsStore']}"
-
-            # Call the credential helper to get credentials for Docker Hub
-            server_url = 'https://index.docker.io/v1/'
-            creds_json = `echo "#{server_url}" | #{helper_name} get 2>/dev/null`
-
-            if $CHILD_STATUS.success? && !creds_json.empty?
-              creds_data = JSON.parse(creds_json)
-              # Authenticate with Docker using the retrieved credentials
-              # Docker API v2 uses 'identifier' and 'secret'
-              Docker.authenticate!(
-                'identifier' => creds_data['Username'],
-                'secret' => creds_data['Secret'],
-                'serveraddress' => server_url
-              )
-            end
-          elsif config['auths'] && config['auths']['https://index.docker.io/v1/']
-            # Fallback: try direct auth from config if no credential helper
-            auth_data = config['auths']['https://index.docker.io/v1/']
-            Docker.authenticate!('serveraddress' => 'https://index.docker.io/v1/') if auth_data
-          end
-        end
-      rescue StandardError => _e
-        # If authentication setup fails, continue anyway
-        # We'll catch the real error during push
+        Docker::Image.get(image_identifier)
+      rescue Docker::Error::NotFoundError
+        return MCP::Tool::Response.new([{
+                                         type: 'text',
+                                         text: "Image #{image_identifier} not found"
+                                       }])
       end
 
-      options = {}
-      options[:tag] = tag if tag
-      options[:repo_tag] = repo_tag if repo_tag
+      # Use the Docker CLI to push the image
+      # This way we leverage Docker's native credential handling
+      push_target = repo_tag || image_identifier
+      _, stderr, status = Open3.capture3('docker', 'push', push_target)
 
-      # After Docker.authenticate! is called, the credentials are stored globally
-      # and will be used automatically by push. We don't need to pass creds explicitly.
-      # Push and capture the response
-      image.push(nil, options) do |chunk|
-        # The push method yields JSON chunks with status info
-        # We can parse these to detect errors
-        if chunk
-          parsed = begin
-            JSON.parse(chunk)
-          rescue StandardError
-            nil
-          end
-          raise Docker::Error::DockerError, parsed['error'] if parsed && parsed['error']
-        end
+      if status.success?
+        MCP::Tool::Response.new([{
+                                  type: 'text',
+                                  text: "Image #{push_target} pushed successfully"
+                                }])
+      else
+        # Extract the error message from stderr
+        error_msg = stderr.strip
+        error_msg = 'Failed to push image' if error_msg.empty?
+
+        MCP::Tool::Response.new([{
+                                  type: 'text',
+                                  text: "Error pushing image: #{error_msg}"
+                                }])
       end
-
-      push_target = repo_tag || (tag ? "#{name}:#{tag}" : name)
-
-      MCP::Tool::Response.new([{
-                                type: 'text',
-                                text: "Image #{push_target} pushed successfully"
-                              }])
-    rescue Docker::Error::NotFoundError
-      MCP::Tool::Response.new([{
-                                type: 'text',
-                                text: "Image #{name} not found"
-                              }])
-    rescue Docker::Error::AuthenticationError
-      MCP::Tool::Response.new([{
-                                type: 'text',
-                                text: "Authentication failed. Please authenticate with 'docker login' first"
-                              }])
     rescue StandardError => e
       MCP::Tool::Response.new([{
                                 type: 'text',
