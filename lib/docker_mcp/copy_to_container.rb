@@ -1,9 +1,5 @@
 # frozen_string_literal: true
 
-require 'tool_forge'
-require 'stringio'
-require 'rubygems/package'
-
 module DockerMCP
   COPY_TO_CONTAINER_DEFINITION = ToolForge.define(:copy_to_container) do
     description 'Copy a file or directory from the local filesystem into a running Docker container. ' \

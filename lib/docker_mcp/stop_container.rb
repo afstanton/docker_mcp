@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'tool_forge'
-
 module DockerMCP
   STOP_CONTAINER_DEFINITION = ToolForge.define(:stop_container) do
     description 'Stop a Docker container'

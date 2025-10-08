@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'tool_forge'
-
 module DockerMCP
   LIST_CONTAINERS_DEFINITION = ToolForge.define(:list_containers) do
     description 'List Docker containers'

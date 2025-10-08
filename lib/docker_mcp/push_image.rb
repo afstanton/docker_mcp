@@ -1,8 +1,5 @@
 # frozen_string_literal: true
 
-require 'tool_forge'
-require 'open3'
-
 module DockerMCP
   PUSH_IMAGE_DEFINITION = ToolForge.define(:push_image) do
     description 'Push a Docker image'

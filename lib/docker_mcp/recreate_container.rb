@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'tool_forge'
-
 module DockerMCP
   RECREATE_CONTAINER_DEFINITION = ToolForge.define(:recreate_container) do
     description 'Recreate a Docker container (stops, removes, and recreates with same configuration)'

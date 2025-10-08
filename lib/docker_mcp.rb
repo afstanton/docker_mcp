@@ -3,6 +3,7 @@
 require 'docker'
 require 'json'
 require 'mcp'
+require 'open3'
 require 'rubygems/package'
 require 'shellwords'
 require 'stringio'

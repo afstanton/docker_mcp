@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'tool_forge'
-
 module DockerMCP
   TAG_IMAGE_DEFINITION = ToolForge.define(:tag_image) do
     description 'Tag a Docker image'

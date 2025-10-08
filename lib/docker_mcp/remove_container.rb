@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'tool_forge'
-
 module DockerMCP
   REMOVE_CONTAINER_DEFINITION = ToolForge.define(:remove_container) do
     description 'Remove a Docker container'

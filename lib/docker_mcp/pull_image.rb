@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'tool_forge'
-
 module DockerMCP
   PULL_IMAGE_DEFINITION = ToolForge.define(:pull_image) do
     description 'Pull a Docker image'

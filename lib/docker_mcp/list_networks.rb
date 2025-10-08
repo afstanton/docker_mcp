@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'tool_forge'
-
 module DockerMCP
   LIST_NETWORKS_DEFINITION = ToolForge.define(:list_networks) do
     description 'List Docker networks'

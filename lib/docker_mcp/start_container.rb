@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'tool_forge'
-
 module DockerMCP
   START_CONTAINER_DEFINITION = ToolForge.define(:start_container) do
     description 'Start a Docker container'

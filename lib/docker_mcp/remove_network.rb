@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'tool_forge'
-
 module DockerMCP
   REMOVE_NETWORK_DEFINITION = ToolForge.define(:remove_network) do
     description 'Remove a Docker network'

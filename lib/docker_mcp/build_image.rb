@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'tool_forge'
-
 module DockerMCP
   BUILD_IMAGE_DEFINITION = ToolForge.define(:build_image) do
     description 'Build a Docker image'

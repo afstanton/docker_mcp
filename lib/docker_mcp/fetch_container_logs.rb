@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'tool_forge'
-
 module DockerMCP
   FETCH_CONTAINER_LOGS_DEFINITION = ToolForge.define(:fetch_container_logs) do
     description 'Fetch Docker container logs'

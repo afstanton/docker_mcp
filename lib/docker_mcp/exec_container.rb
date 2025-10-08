@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'tool_forge'
-
 module DockerMCP
   EXEC_CONTAINER_DEFINITION = ToolForge.define(:exec_container) do
     description 'Execute a command inside a running Docker container. ' \

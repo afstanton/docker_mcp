@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'tool_forge'
-
 module DockerMCP
   CREATE_NETWORK_DEFINITION = ToolForge.define(:create_network) do
     description 'Create a Docker network'
