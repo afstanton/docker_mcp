@@ -50,7 +50,7 @@ module DockerMCP
   #     cmd: "python manage.py migrate",
   #     working_dir: "/app",
   #     user: "appuser",
-  #     env: ["DJANGO_ENV=production", "DEBUG=false"],
+  #     env: "DJANGO_ENV=production,DEBUG=false",
   #     timeout: 120
   #   )
   #
@@ -80,9 +80,8 @@ module DockerMCP
           description: 'User to run the command as (optional, e.g., "1000" or "username")'
         },
         env: {
-          type: 'array',
-          items: { type: 'string' },
-          description: 'Environment variables as KEY=VALUE (optional)'
+          type: 'string',
+          description: 'Environment variables as comma-separated KEY=VALUE pairs (optional)'
         },
         stdin: {
           type: 'string',
@@ -111,7 +110,7 @@ module DockerMCP
     # @param server_context [Object] MCP server context (unused but required)
     # @param working_dir [String, nil] working directory for command execution
     # @param user [String, nil] user to run command as (username or UID)
-    # @param env [Array<String>, nil] environment variables in KEY=VALUE format
+    # @param env [String, nil] environment variables as comma-separated KEY=VALUE pairs
     # @param stdin [String, nil] input to send to command via stdin
     # @param timeout [Integer] maximum execution time in seconds (default: 60)
     #
@@ -135,7 +134,7 @@ module DockerMCP
     #     cmd: "bundle exec rails console",
     #     working_dir: "/app",
     #     user: "rails",
-    #     env: ["RAILS_ENV=production"],
+    #     env: "RAILS_ENV=production,DEBUG=true",
     #     timeout: 300
     #   )
     #
@@ -149,6 +148,10 @@ module DockerMCP
 
       cmd_array = Shellwords.split(cmd)
 
+      # Parse environment variables from comma-separated string to array
+      env_array = nil
+      env_array = env.split(',').map(&:strip) if env && !env.empty?
+
       # Build exec options
       exec_options = {
         'Cmd' => cmd_array,
@@ -157,7 +160,7 @@ module DockerMCP
       }
       exec_options['WorkingDir'] = working_dir if working_dir
       exec_options['User'] = user if user
-      exec_options['Env'] = env if env
+      exec_options['Env'] = env_array if env_array
       exec_options['AttachStdin'] = true if stdin
 
       # Execute the command

@@ -47,7 +47,7 @@ module DockerMCP
   #     server_context: context,
   #     image: "postgres:13",
   #     name: "database",
-  #     env: ["POSTGRES_PASSWORD=secret", "POSTGRES_DB=myapp"],
+  #     env: "POSTGRES_PASSWORD=secret,POSTGRES_DB=myapp",
   #     exposed_ports: {"5432/tcp" => {}},
   #     host_config: {
   #       "PortBindings" => {"5432/tcp" => [{"HostPort" => "5432"}]},
@@ -73,14 +73,12 @@ module DockerMCP
           description: 'Container name (optional)'
         },
         cmd: {
-          type: 'array',
-          items: { type: 'string' },
-          description: 'Command to run (optional)'
+          type: 'string',
+          description: 'Command to run as space-separated string (optional, e.g., "npm start" or "python app.py")'
         },
         env: {
-          type: 'array',
-          items: { type: 'string' },
-          description: 'Environment variables as KEY=VALUE (optional)'
+          type: 'string',
+          description: 'Environment variables as comma-separated KEY=VALUE pairs (optional)'
         },
         exposed_ports: {
           type: 'object',
@@ -104,8 +102,8 @@ module DockerMCP
     # @param image [String] Docker image name with optional tag (e.g., "nginx:latest")
     # @param server_context [Object] MCP server context (unused but required)
     # @param name [String, nil] custom name for the container
-    # @param cmd [Array<String>, nil] command to execute in the container
-    # @param env [Array<String>, nil] environment variables in KEY=VALUE format
+    # @param cmd [String, nil] command to execute as space-separated string
+    # @param env [String, nil] environment variables as comma-separated KEY=VALUE pairs
     # @param exposed_ports [Hash, nil] ports to expose in {"port/protocol" => {}} format
     # @param host_config [Hash, nil] Docker host configuration including bindings and volumes
     #
@@ -127,7 +125,7 @@ module DockerMCP
     #     server_context: context,
     #     image: "redis:7-alpine",
     #     name: "redis-cache",
-    #     env: ["REDIS_PASSWORD=secret"],
+    #     env: "REDIS_PASSWORD=secret,REDIS_PORT=6379",
     #     exposed_ports: {"6379/tcp" => {}},
     #     host_config: {
     #       "PortBindings" => {"6379/tcp" => [{"HostPort" => "6379"}]},
@@ -139,8 +137,13 @@ module DockerMCP
     def self.call(image:, server_context:, name: nil, cmd: nil, env: nil, exposed_ports: nil, host_config: nil)
       config = { 'Image' => image }
       config['name'] = name if name
-      config['Cmd'] = cmd if cmd
-      config['Env'] = env if env
+
+      # Parse cmd string into array if provided
+      config['Cmd'] = Shellwords.split(cmd) if cmd && !cmd.strip.empty?
+
+      # Parse env string into array if provided
+      config['Env'] = env.split(',').map(&:strip) if env && !env.strip.empty?
+
       config['ExposedPorts'] = exposed_ports if exposed_ports
       config['HostConfig'] = host_config if host_config
 
