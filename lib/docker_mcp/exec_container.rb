@@ -1,6 +1,77 @@
 # frozen_string_literal: true
 
 module DockerMCP
+  # MCP tool for executing commands inside Docker containers.
+  #
+  # This tool provides the ability to execute arbitrary commands inside
+  # running Docker containers. It supports interactive and non-interactive
+  # execution, environment variable injection, working directory specification,
+  # and user context switching within the container.
+  #
+  # == Features
+  #
+  # - Execute arbitrary commands in running containers
+  # - Support for command arguments and shell parsing
+  # - Environment variable injection
+  # - Working directory specification
+  # - User context switching (run as specific user)
+  # - Standard input, output, and error handling
+  # - Configurable execution timeouts
+  #
+  # == Security Considerations
+  #
+  # **CRITICAL WARNING**: This tool provides arbitrary command execution
+  # capabilities with significant security implications:
+  #
+  # - **Code Execution**: Can run any command available in the container
+  # - **File System Access**: Can read, write, and modify container files
+  # - **Network Access**: Can initiate network connections from container
+  # - **Process Manipulation**: Can start, stop, and signal processes
+  # - **Data Exposure**: Can access sensitive data within the container
+  # - **Privilege Escalation**: May exploit container or kernel vulnerabilities
+  # - **Resource Consumption**: Can consume container and host resources
+  #
+  # **Security Recommendations**:
+  # - Implement strict access controls and authentication
+  # - Use dedicated execution containers with minimal privileges
+  # - Monitor and log all command executions
+  # - Apply resource limits and timeouts
+  # - Validate and sanitize all command inputs
+  # - Consider using read-only file systems where possible
+  # - Implement network segmentation for container environments
+  #
+  # == Parameters
+  #
+  # - **id**: Container ID or name (required)
+  # - **cmd**: Command to execute (shell-parsed into arguments) (required)
+  # - **working_dir**: Working directory for command execution (optional)
+  # - **user**: User to run the command as (optional, e.g., "1000" or "username")
+  # - **env**: Environment variables as comma-separated KEY=VALUE pairs (optional)
+  # - **stdin**: Input to send to command via stdin (optional)
+  # - **timeout**: Timeout in seconds (optional, default: 60)
+  #
+  # == Example Usage
+  #
+  #   # Basic command execution
+  #   response = ExecContainer.call(
+  #     server_context: context,
+  #     id: "web-container",
+  #     cmd: "nginx -t"
+  #   )
+  #
+  #   # Advanced execution with environment
+  #   response = ExecContainer.call(
+  #     server_context: context,
+  #     id: "app-container",
+  #     cmd: "bundle exec rails console",
+  #     working_dir: "/app",
+  #     user: "rails",
+  #     env: "RAILS_ENV=production,DEBUG=true",
+  #     timeout: 300
+  #   )
+  #
+  # @see Docker::Container#exec
+  # @since 0.1.0
   EXEC_CONTAINER_DEFINITION = ToolForge.define(:exec_container) do
     description 'Execute a command inside a running Docker container. ' \
                 'WARNING: This provides arbitrary command execution within the container. ' \

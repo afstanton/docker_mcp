@@ -10,5 +10,5 @@ module DockerMCP
   #
   # @see https://semver.org/
   # @since 0.1.0
-  VERSION = '0.2.11'
+  VERSION = '0.3.0'
 end

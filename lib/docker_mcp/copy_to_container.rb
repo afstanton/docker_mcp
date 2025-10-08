@@ -1,6 +1,67 @@
 # frozen_string_literal: true
 
 module DockerMCP
+  # MCP tool for copying files and directories to Docker containers.
+  #
+  # This tool provides the ability to copy files and directories from the
+  # local host filesystem into running Docker containers. It supports both
+  # individual files and entire directory trees, with optional ownership
+  # modification within the container.
+  #
+  # == Features
+  #
+  # - Copy files and directories from host to container
+  # - Supports recursive directory copying
+  # - Preserves file permissions and metadata
+  # - Optional ownership modification after copy
+  # - Works with running containers
+  # - Comprehensive error handling and validation
+  #
+  # == Security Considerations
+  #
+  # File copying operations have significant security implications:
+  # - **File System Access**: Reads local host file system content
+  # - **Container Modification**: Alters container file system state
+  # - **Data Injection**: Can introduce malicious files into containers
+  # - **Permission Escalation**: May affect container security context
+  # - **Resource Consumption**: Large copies can consume storage and I/O
+  # - **Path Traversal**: Improper paths could access unintended locations
+  #
+  # **Security Recommendations**:
+  # - Validate and sanitize all file paths
+  # - Implement access controls for source file locations
+  # - Monitor file copy operations and sizes
+  # - Use read-only mounts where possible
+  # - Apply resource limits to prevent abuse
+  #
+  # == Parameters
+  #
+  # - **id**: Container ID or name (required)
+  # - **source_path**: Path to file/directory on local filesystem (required)
+  # - **destination_path**: Path inside container for copied content (required)
+  # - **owner**: Owner for copied files (optional, e.g., "1000:1000" or "username:group")
+  #
+  # == Example Usage
+  #
+  #   # Copy single file
+  #   response = CopyToContainer.call(
+  #     server_context: context,
+  #     id: "web-server",
+  #     source_path: "/local/config.conf",
+  #     destination_path: "/etc/nginx/nginx.conf"
+  #   )
+  #
+  #   # Copy directory with ownership change
+  #   response = CopyToContainer.call(
+  #     server_context: context,
+  #     id: "app-container",
+  #     source_path: "/local/app-data",
+  #     destination_path: "/var/lib/app",
+  #     owner: "app:app"
+  #   )
+  #
+  # @see Docker::Container#archive_in_stream
+  # @since 0.1.0
   COPY_TO_CONTAINER_DEFINITION = ToolForge.define(:copy_to_container) do
     description 'Copy a file or directory from the local filesystem into a running Docker container. ' \
                 'The source path is on the local machine, and the destination path is inside the container.'

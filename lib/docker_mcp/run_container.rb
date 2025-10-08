@@ -1,6 +1,64 @@
 # frozen_string_literal: true
 
 module DockerMCP
+  # MCP tool for running Docker containers.
+  #
+  # This tool creates and immediately starts a Docker container from a
+  # specified image in a single operation. It combines the functionality
+  # of create_container and start_container for convenience when immediate
+  # execution is desired.
+  #
+  # == Features
+  #
+  # - Creates and starts containers in one operation
+  # - Supports all container configuration options
+  # - Configures command execution and environment variables
+  # - Sets up port exposure and network configuration
+  # - Applies advanced host configurations and volume mounts
+  # - Handles container naming and labeling
+  #
+  # == Security Considerations
+  #
+  # Running containers involves significant security considerations:
+  # - **Immediate Execution**: Starts processes immediately upon creation
+  # - **Resource Consumption**: Consumes CPU, memory, and storage resources
+  # - **Network Exposure**: Creates active network endpoints
+  # - **File System Access**: Potentially accesses host directories
+  # - **Process Isolation**: Runs processes with configured privileges
+  #
+  # Implement strict access controls and resource monitoring.
+  #
+  # == Parameters
+  #
+  # - **image**: Docker image to use (required)
+  # - **name**: Custom container name (optional)
+  # - **cmd**: Command to execute as space-separated string (optional)
+  # - **env**: Environment variables as comma-separated KEY=VALUE pairs (optional)
+  # - **exposed_ports**: Port exposure configuration as JSON object (optional)
+  # - **host_config**: Advanced host configuration as JSON object (optional)
+  #
+  # == Example Usage
+  #
+  #   # Simple container execution
+  #   response = RunContainer.call(
+  #     server_context: context,
+  #     image: "alpine:latest",
+  #     cmd: "echo 'Hello World'"
+  #   )
+  #
+  #   # Web server with port binding
+  #   response = RunContainer.call(
+  #     server_context: context,
+  #     image: "nginx:latest",
+  #     name: "web-server",
+  #     exposed_ports: {"80/tcp" => {}},
+  #     host_config: {
+  #       "PortBindings" => {"80/tcp" => [{"HostPort" => "8080"}]}
+  #     }
+  #   )
+  #
+  # @see Docker::Container.create
+  # @since 0.1.0
   RUN_CONTAINER_DEFINITION = ToolForge.define(:run_container) do
     description 'Run a Docker container (create and start)'
 

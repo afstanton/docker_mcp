@@ -1,6 +1,65 @@
 # frozen_string_literal: true
 
 module DockerMCP
+  # MCP tool for recreating Docker containers.
+  #
+  # This tool provides a complete container recreation process that stops
+  # the existing container, removes it, and creates a new container with
+  # the same configuration. This is useful for applying image updates,
+  # clearing container state, or resolving container corruption issues.
+  #
+  # == Features
+  #
+  # - Complete container recreation with preserved configuration
+  # - Automatic stop, remove, and recreate sequence
+  # - Preserves original container configuration and settings
+  # - Configurable stop timeout for graceful shutdown
+  # - Handles both running and stopped containers
+  # - Maintains container networking and volume configurations
+  #
+  # == Security Considerations
+  #
+  # Container recreation involves several security considerations:
+  # - **Service Downtime**: Temporary service interruption during recreation
+  # - **Data Loss**: Container file system changes are lost (volumes preserved)
+  # - **Resource Allocation**: New container may have different resource usage
+  # - **Network Reconfiguration**: IP addresses may change
+  # - **State Reset**: Application state within container is lost
+  #
+  # Plan recreations carefully and coordinate with dependent services.
+  #
+  # == Parameters
+  #
+  # - **id**: Container ID or name to recreate (required)
+  # - **timeout**: Seconds to wait before killing container when stopping (optional, default: 10)
+  #
+  # == Process Flow
+  #
+  # 1. Inspect existing container to capture configuration
+  # 2. Stop the running container (if running)
+  # 3. Remove the stopped container
+  # 4. Create new container with captured configuration
+  # 5. Return new container information
+  #
+  # == Example Usage
+  #
+  #   # Recreate with default timeout
+  #   response = RecreateContainer.call(
+  #     server_context: context,
+  #     id: "web-server"
+  #   )
+  #
+  #   # Recreate with extended timeout
+  #   response = RecreateContainer.call(
+  #     server_context: context,
+  #     id: "database",
+  #     timeout: 30
+  #   )
+  #
+  # @see Docker::Container#stop
+  # @see Docker::Container#remove
+  # @see Docker::Container.create
+  # @since 0.1.0
   RECREATE_CONTAINER_DEFINITION = ToolForge.define(:recreate_container) do
     description 'Recreate a Docker container (stops, removes, and recreates with same configuration)'
 
