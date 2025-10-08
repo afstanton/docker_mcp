@@ -27,7 +27,7 @@ module DockerMCP
           required: false
 
     # Helper method for adding files/directories to tar
-    helper :add_to_tar do |tar, path, archive_path|
+    class_helper :add_to_tar do |tar, path, archive_path|
       if File.directory?(path)
         # Add directory entry
         tar.mkdir(archive_path, File.stat(path).mode)
