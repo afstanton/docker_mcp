@@ -26,13 +26,35 @@ module DockerMCP
           description: 'Owner for the copied files (optional, e.g., "1000:1000" or "username:group")',
           required: false
 
+    # Helper method for adding files/directories to tar
+    helper :add_to_tar do |tar, path, archive_path|
+      if File.directory?(path)
+        # Add directory entry
+        tar.mkdir(archive_path, File.stat(path).mode)
+
+        # Add directory contents
+        Dir.entries(path).each do |entry|
+          next if ['.', '..'].include?(entry)
+
+          full_path = File.join(path, entry)
+          archive_entry_path = File.join(archive_path, entry)
+          add_to_tar(tar, full_path, archive_entry_path)
+        end
+      else
+        # Add file
+        File.open(path, 'rb') do |file|
+          tar.add_file_simple(archive_path, File.stat(path).mode, file.size) do |tar_file|
+            IO.copy_stream(file, tar_file)
+          end
+        end
+      end
+    end
+
     execute do |id:, source_path:, destination_path:, owner: nil|
       container = Docker::Container.get(id)
 
       # Verify source path exists
-      unless File.exist?(source_path)
-        next "Source path not found: #{source_path}"
-      end
+      next "Source path not found: #{source_path}" unless File.exist?(source_path)
 
       # Create a tar archive of the source
       tar_io = StringIO.new
@@ -63,30 +85,6 @@ module DockerMCP
       "Container #{id} not found"
     rescue StandardError => e
       "Error copying to container: #{e.message}"
-    end
-  end
-
-  # Helper method for adding files/directories to tar
-  def self.add_to_tar(tar, path, archive_path)
-    if File.directory?(path)
-      # Add directory entry
-      tar.mkdir(archive_path, File.stat(path).mode)
-
-      # Add directory contents
-      Dir.entries(path).each do |entry|
-        next if ['.', '..'].include?(entry)
-
-        full_path = File.join(path, entry)
-        archive_entry_path = File.join(archive_path, entry)
-        add_to_tar(tar, full_path, archive_entry_path)
-      end
-    else
-      # Add file
-      File.open(path, 'rb') do |file|
-        tar.add_file_simple(archive_path, File.stat(path).mode, file.size) do |tar_file|
-          IO.copy_stream(file, tar_file)
-        end
-      end
     end
   end
 

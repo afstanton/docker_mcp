@@ -28,8 +28,8 @@ module DockerMCP
       # Validate that the image name includes a registry/username
       unless name.include?('/') || repo_tag&.include?('/')
         next 'Error: Image name must include registry/username ' \
-              "(e.g., 'username/#{name}'). Local images cannot be " \
-              'pushed without a registry prefix.'
+             "(e.g., 'username/#{name}'). Local images cannot be " \
+             'pushed without a registry prefix.'
       end
 
       # Verify the image exists
