@@ -6,6 +6,7 @@ require 'mcp'
 require 'rubygems/package'
 require 'shellwords'
 require 'stringio'
+require 'tool_forge'
 require 'zeitwerk'
 
 loader = Zeitwerk::Loader.for_gem(warn_on_extra_files: false)

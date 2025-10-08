@@ -38,6 +38,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'base64'
   spec.add_dependency 'docker-api'
   spec.add_dependency 'mcp'
+  spec.add_dependency 'tool_forge'
   spec.add_dependency 'zeitwerk'
 
   # For more information and examples about making a new gem, check out our

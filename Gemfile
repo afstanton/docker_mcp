@@ -12,3 +12,5 @@ gem 'rubocop'
 gem 'rubocop-rake'
 gem 'rubocop-rspec'
 gem 'simplecov'
+
+gem 'tool_forge', path: '../tool_forge'
